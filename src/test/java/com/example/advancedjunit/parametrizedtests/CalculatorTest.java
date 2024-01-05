@@ -77,7 +77,7 @@ public class CalculatorTest {
 
     private static Stream<Arguments> provideNumbersForSubtract() {
         return Stream.of(
-                Arguments.of(1, 1, 0),
+                Arguments.of(1, 1, -1),
                 Arguments.of(10, 25, -15),
                 Arguments.of(3, 1, 2)
         );
