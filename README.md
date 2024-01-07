@@ -7,7 +7,7 @@ Eine Demo von Timo Scheerer und Timo Büchert
 - Parametrisierte Tests (X)
 - Test Suites (X)
 - Reflections
-- Test Fixtures
+- Test Fixtures (X)
 - Testregeln
 - Testvererbung
 - Temporäre Daten 
