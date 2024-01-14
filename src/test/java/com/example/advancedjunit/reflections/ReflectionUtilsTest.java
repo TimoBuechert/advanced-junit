@@ -3,8 +3,13 @@ package com.example.advancedjunit.reflections;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.ReflectionUtils;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,31 +21,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ReflectionUtilsTest {
 
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface SlowMethod {
+    }
+
     static class TestClass {
-        private final String privateField = "privateField";
-        public final String publicField = "publicField";
-        protected final String protectedField = "protectedField";
+        private String privateField = "privateField";
+        public String publicField = "publicField";
+
+        protected String protectedField = "protectedField";
         final String packagePrivateField = "packagePrivateField";
 
+        public String getPrivateField() {
+            return privateField;
+        }
+
+        @SlowMethod
         private String privateMethod() {
             return "private";
         }
 
-        public String publicMethod() {
-            return "public";
-        }
-
-        protected String protectedMethod() {
-            return "protected";
-        }
-
-        String packagePrivateMethod() {
-            return "packagePrivate";
-        }
     }
 
     @Test
-    void testPrivateMethod() {
+    void testInvokePrivateMethod() {
         //given
         final Method privateMethod = ReflectionUtils.findMethod(TestClass.class, "privateMethod").get();
 
@@ -52,7 +57,7 @@ public class ReflectionUtilsTest {
     }
 
     @Test
-    void testPrivateField() throws Exception {
+    void testGetPrivateField() throws Exception {
         //given
         final List<Field> privateFields = ReflectionUtils.findFields(TestClass.class, field -> field.getName().equals("privateField"),
                 ReflectionUtils.HierarchyTraversalMode.TOP_DOWN);
@@ -63,5 +68,37 @@ public class ReflectionUtilsTest {
 
         //then
         assertEquals("privateField", result);
+    }
+
+    @Test
+    void testModifyPrivateField() throws Exception {
+        //given
+        final TestClass testClass = new TestClass();
+
+        final Field privateField = testClass.getClass().getDeclaredField("privateField");
+        privateField.setAccessible(true);
+
+        //when
+        privateField.set(testClass, "privateFieldModified");
+
+        //then
+        assertEquals("privateFieldModified", testClass.getPrivateField());
+    }
+
+    @Test
+    void testInvokeMethodWithAnnotation() {
+        //given
+        final TestClass testClass = new TestClass();
+
+        final Method slowMethod =
+                Arrays.stream(testClass.getClass().getDeclaredMethods()).
+                        filter(method -> Arrays.stream(method.getAnnotations()).anyMatch(annotation -> annotation instanceof SlowMethod))
+                        .findFirst().get();
+
+        //when
+        final Object result = ReflectionUtils.invokeMethod(slowMethod, new TestClass());
+
+        //then
+        assertEquals("private", result);
     }
 }
