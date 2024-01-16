@@ -18,6 +18,7 @@ class CarTest {
 
     @Test
     void start() {
+        carUnderTest.insertKey();
         carUnderTest.start();
         assertTrue(carUnderTest.isRunning());
     }

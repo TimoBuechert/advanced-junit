@@ -2,6 +2,7 @@ package com.example.advancedjunit.testfixtures;
 
 import org.junit.jupiter.api.*;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AnotherCarTest {
@@ -31,7 +32,7 @@ public class AnotherCarTest {
         carUnderTest.insertKey();
         carUnderTest.start();
         carUnderTest.stop();
-        assertTrue(carUnderTest.isRunning());
+        assertFalse(carUnderTest.isRunning());
     }
 
     @AfterEach
