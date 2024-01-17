@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.slf4j.Logger;
 
 import java.util.stream.Stream;
 
@@ -13,7 +14,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author timo.buechert
  */
+//@ExtendWith({LoggingExtension.class})
+//@ExtendWith({BenchmarkExtension.class})
 public class CalculatorTest {
+
+
+    private Logger logger;
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 3, 5, -3, 15, Integer.MAX_VALUE})
